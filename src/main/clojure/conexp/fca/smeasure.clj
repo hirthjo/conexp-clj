@@ -640,7 +640,25 @@
 
 ;; Computes all concepts containing an object g and the concepts in covering relation
 
-(defn concept-lattice-filter+covering-concepts
+(defn object-concept-lattice-filter
+  "Computes all concepts containing object g and their covering
+  concepts."
+  [ctx g]
+  (let [first-C [(context-object-closure ctx #{g}) 
+                 (object-derivation ctx #{g})]]
+    (loop [BV #{first-C} 
+           queue #{first-C}]
+      (if (empty? queue) 
+        BV
+        (let [C (first queue)]
+          (let [covering-C (direct-upper-concepts ctx C)
+                ;; those not containing g can be added since they are in cover with a concept containing c
+                new-C (difference covering-C BV) 
+                ;; only continue with those that contain g to ensure selection criteria
+                ]
+            (recur (into BV new-C) (into (disj queue C) new-C))))))))
+
+(defn object-concept-lattice-filter-and-covering
   "Computes all concepts containing object g and their covering
   concepts."
   [ctx g]
